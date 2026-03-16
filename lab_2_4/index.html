@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>СУПЕР ПРЕМЬЕРА: Приключения Роналду и Месси</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="./cookie.js" defer></script>
+  <script src="./main.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="top-alert">ВНИМАНИЕ: ЭТО САМАЯ ГРОМКАЯ ПРЕМЬЕРА 2026 ГОДА. НЕ ПРОЛИСТЫВАЙ!</div>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false">
+      Тёмная тема
+    </button>
+  </header>
+
+  <main class="page-main">
+    <div class="layout">
+      <aside class="side-ad" aria-label="Промо-блок слева">
+        <h3 class="ad-title">Сомнительный бонус №1</h3>
+        <p>Купи просмотр сейчас и получи 999% мотивации на утро понедельника.</p>
+        <button class="ad-btn" type="button">Забрать бонус</button>
+      </aside>
+
+      <div class="main-column">
+        <section class="hero">
+          <h1>Приключения Криштиану Роналду и Месси</h1>
+          <p>Эпичнее футбола, громче трибун, без шанса остаться равнодушным. Видео, которое все обсуждают.</p>
+        </section>
+
+        <section class="reasons">
+          <h2>Топ-5 причин, почему это нужно именно тебе</h2>
+          <div class="reasons-grid">
+            <article class="reason">
+              <span class="reason-num">1</span>
+              <p>Ты увидишь дуэт легенд в сюжете, который невозможен в обычной реальности.</p>
+            </article>
+            <article class="reason">
+              <span class="reason-num">2</span>
+              <p>Можно смотреть с друзьями и спорить, где момент круче, чем в финале ЛЧ.</p>
+            </article>
+            <article class="reason">
+              <span class="reason-num">3</span>
+              <p>Идеально для вдохновения перед тренировкой или любой важной задачей.</p>
+            </article>
+            <article class="reason">
+              <span class="reason-num">4</span>
+              <p>Контент выглядит так, будто его бюджет больше, чем у космической миссии.</p>
+            </article>
+            <article class="reason">
+              <span class="reason-num">5</span>
+              <p>Если не посмотришь сейчас, завтра о нем уже будут говорить все вокруг.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="slogans">
+          <h2>Лозунги для мужчинских мужчин</h2>
+          <div class="slogan-list">
+            <span class="slogan">СМОТРИ СЕЙЧАС ИЛИ ПОЖАЛЕЕШЬ В 23:59</span>
+            <span class="slogan">1 КЛИК = 1 ПОРЦИЯ ЭПИКА</span>
+            <span class="slogan">НЕ СМОТРИШЬ? ЗНАЧИТ ТЫ ЕЩЕ НЕ ГОТОВ К ЛЕГЕНДАМ</span>
+            <span class="slogan">РОНАЛДУ + МЕССИ = ВЗРЫВ МОТИВАЦИИ</span>
+            <span class="slogan">ЭТО НЕ РЕКЛАМА. ЭТО СУДЬБА.</span>
+          </div>
+        </section>
+
+        <section class="reviews" id="reviews">
+          <h2>Отзывы зрителей</h2>
+          <p class="section-copy">
+            В ленте уже есть несколько отзывов по умолчанию. Новые сообщения проходят
+            валидацию и сохраняются в cookie прямо в браузере.
+          </p>
+          <div class="reviews-layout">
+            <div class="reviews-list" id="reviews-list" aria-live="polite"></div>
+
+            <form class="review-form" id="review-form" novalidate>
+              <h3>Добавить отзыв</h3>
+              <p>Оставь имя и короткий текст. Пустые поля, слишком короткие и слишком длинные отзывы не пройдут.</p>
+
+              <label class="form-field" for="review-name">
+                <span>Имя</span>
+                <input
+                  id="review-name"
+                  name="name"
+                  type="text"
+                  maxlength="40"
+                  autocomplete="name"
+                  placeholder="Например, Ян"
+                  required
+                />
+                <small class="field-error" data-error-for="name"></small>
+              </label>
+
+              <label class="form-field" for="review-text">
+                <span>Текст отзыва</span>
+                <textarea
+                  id="review-text"
+                  name="text"
+                  maxlength="280"
+                  placeholder="Расскажите, что вас впечатлило"
+                  required
+                ></textarea>
+                <small class="field-error" data-error-for="text"></small>
+              </label>
+
+              <p class="form-status" id="review-status" role="status" aria-live="polite"></p>
+              <button class="review-submit" type="submit">Сохранить отзыв</button>
+            </form>
+          </div>
+        </section>
+
+        <section class="video-section">
+          <h2>Видео-подборка</h2>
+          <div class="videos-grid">
+            <article class="video-card">
+              <video class="hover-play" controls muted playsinline preload="metadata" src="./assets/video/messi-ronaldo-best-moments.mp4">
+                Ваш браузер не поддерживает видео.
+              </video>
+              <p class="slot-note">Лучшие моменты Месси и Роналду</p>
+            </article>
+            <article class="video-card">
+              <video class="hover-play" controls muted playsinline preload="metadata" src="./assets/video/ronaldo-funniest-part-1.mp4">
+                Ваш браузер не поддерживает видео.
+              </video>
+              <p class="slot-note">Самые смешные моменты с Роналду, часть 1</p>
+            </article>
+            <article class="video-card">
+              <video class="hover-play" controls muted playsinline preload="metadata" src="./assets/video/top-5-messi-ronaldo-moments.mp4">
+                Ваш браузер не поддерживает видео.
+              </video>
+              <p class="slot-note">Топ-5 моментов Месси и Роналду</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="cta">
+          <h2>Нажми, пока предложение "не исчезло"</h2>
+          <p>Осталось: 00:14:59 до конца супер-мега-ультра акции*</p>
+          <button type="button">ХОЧУ СМОТРЕТЬ ПРЯМО СЕЙЧАС</button>
+        </section>
+      </div>
+
+      <aside class="side-ad" aria-label="Промо-блок справа">
+        <h3 class="ad-title">Сомнительный бонус №2</h3>
+        <p>Только сегодня: подписка на «энергию победителя» всего за 0.99$ в минуту.</p>
+        <button class="ad-btn" type="button">Оформить мгновенно</button>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>Отзывы из формы сохраняются в cookie, а переключатель темы остаётся всегда под рукой в правом верхнем углу.</p>
+  </footer>
+
+  <section class="cookie-banner" id="cookie-banner" aria-live="polite" aria-label="Уведомление об использовании cookie" hidden>
+    <div class="cookie-banner__content">
+      <h2>Согласие на cookie</h2>
+      <p>
+        Мы используем cookie, чтобы сохранять ваши отзывы между посещениями сайта.
+        Вы можете принять или отклонить необязательные cookie.
+      </p>
+    </div>
+    <div class="cookie-banner__actions">
+      <button class="cookie-banner__button" id="cookie-accept" type="button">Принять</button>
+      <button class="cookie-banner__button cookie-banner__button-secondary" id="cookie-reject" type="button">Отклонить</button>
+    </div>
+  </section>
+</body>
+</html>
