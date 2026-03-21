@@ -305,15 +305,6 @@ function buildBody() {
         <div class="deck-grid" id="deck-grid"></div>
       </section>
 
-      <aside class="panel hint" aria-labelledby="info-title">
-        <h2 id="info-title">Инфо</h2>
-        <ol>
-          <li>Есть базовый класс Card и 3 наследника.</li>
-          <li>У каждой карты есть метод с HTML.</li>
-          <li>Всё содержимое body строится в JS.</li>
-        </ol>
-      </aside>
-
       <section class="panel" aria-labelledby="blocks-title" id="blocks-section"></section>
     </main>
 
