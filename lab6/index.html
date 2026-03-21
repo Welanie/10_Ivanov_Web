@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Лабораторная работа №6</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <div>
+          <p class="eyebrow">Лабораторная работа №6</p>
+          <h1>Работа с публичными API через меню навигации</h1>
+        </div>
+        <nav aria-label="Навигация по API">
+          <ul class="menu">
+            <li>
+              <button class="menu-btn is-active" data-target="countries-panel" type="button">
+                Страны (REST Countries)
+              </button>
+            </li>
+            <li>
+              <button class="menu-btn" data-target="dogs-panel" type="button">
+                Случайная собака (Dog API)
+              </button>
+            </li>
+            <li>
+              <button class="menu-btn" data-target="posts-panel" type="button">
+                Посты (JSONPlaceholder)
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel is-active" id="countries-panel" aria-labelledby="countries-title">
+        <h2 id="countries-title">REST Countries API</h2>
+        <p class="panel-description">
+          Поиск страны и получение базовой информации методом <code>GET</code>.
+        </p>
+
+        <form id="country-form" class="form-row">
+          <label for="country-input">Название страны:</label>
+          <input id="country-input" name="country" placeholder="Например: Japan" required />
+          <button type="submit">Найти</button>
+        </form>
+
+        <p class="status status-idle" id="country-status">Ожидание запроса...</p>
+
+        <div class="result" id="country-result">
+          <p class="placeholder">Здесь появятся карточки стран.</p>
+        </div>
+      </section>
+
+      <section class="panel" id="dogs-panel" aria-labelledby="dogs-title" hidden>
+        <h2 id="dogs-title">Dog CEO API</h2>
+        <p class="panel-description">
+          Получение случайного изображения собаки методом <code>GET</code>.
+        </p>
+
+        <div class="form-row">
+          <button type="button" id="dog-btn">Показать случайную собаку</button>
+        </div>
+
+        <p class="status status-idle" id="dog-status">Ожидание запроса...</p>
+
+        <div class="result" id="dog-result">
+          <p class="placeholder">Изображение появится после запроса.</p>
+        </div>
+      </section>
+
+      <section class="panel" id="posts-panel" aria-labelledby="posts-title" hidden>
+        <h2 id="posts-title">JSONPlaceholder API</h2>
+        <p class="panel-description">
+          Демонстрация методов <code>GET</code>, <code>POST</code>, <code>PATCH</code>, <code>DELETE</code>.
+        </p>
+
+        <div class="stack">
+          <section class="card">
+            <h3>GET: список постов</h3>
+            <button id="posts-load-btn" type="button">Загрузить 5 постов</button>
+          </section>
+
+          <section class="card">
+            <h3>POST: создать пост</h3>
+            <form id="post-create-form" class="stack">
+              <label for="create-title">Заголовок</label>
+              <input id="create-title" name="title" required />
+              <label for="create-body">Текст</label>
+              <textarea id="create-body" name="body" rows="4" required></textarea>
+              <button type="submit">Создать</button>
+            </form>
+          </section>
+
+          <section class="card">
+            <h3>PATCH: обновить пост</h3>
+            <form id="post-patch-form" class="stack">
+              <label for="patch-id">ID поста</label>
+              <input id="patch-id" name="id" type="number" min="1" required />
+              <label for="patch-title">Новый заголовок</label>
+              <input id="patch-title" name="title" />
+              <label for="patch-body">Новый текст</label>
+              <textarea id="patch-body" name="body" rows="3"></textarea>
+              <button type="submit">Обновить</button>
+            </form>
+          </section>
+
+          <section class="card">
+            <h3>DELETE: удалить пост</h3>
+            <form id="post-delete-form" class="form-row form-row-tight">
+              <label for="delete-id">ID поста:</label>
+              <input id="delete-id" name="id" type="number" min="1" required />
+              <button type="submit" class="danger">Удалить</button>
+            </form>
+          </section>
+        </div>
+
+        <p class="status status-idle" id="post-status">Ожидание действий...</p>
+
+        <div class="result" id="post-response">
+          <p class="placeholder">Ответы API и список постов появятся здесь.</p>
+        </div>
+      </section>
+
+      <aside class="sidebar" aria-labelledby="log-title">
+        <h2 id="log-title">Журнал операций</h2>
+        <ul id="log-list">
+          <li>Приложение готово к работе.</li>
+        </ul>
+      </aside>
+    </main>
+
+    <footer class="site-footer">
+      <p>Лабораторная №6: меню в шапке, 3 API и обработка запросов с заглушками состояний.</p>
+    </footer>
+  </body>
+</html>
