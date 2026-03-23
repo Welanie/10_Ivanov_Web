@@ -24,6 +24,88 @@ const ENDPOINTS = {
   posts: 'https://jsonplaceholder.typicode.com/posts'
 };
 
+async function sendRequest(urlObject, data = {}, params = {}) {
+  const method = urlObject.method || 'GET';
+  const url = constructUrl(urlObject.path, params);
+  const withBody = method !== 'GET' && method !== 'DELETE';
+  const options = {
+    method
+  };
+
+  if (withBody) {
+    options.headers = getDefaultHeaders();
+    options.body = JSON.stringify(data);
+  }
+
+  addLog(`${urlObject.operation}: отправка ${method}.`);
+
+  let response;
+  try {
+    response = await fetch(url, options);
+  } catch (error) {
+    const message = normalizeError(error);
+    addLog(`${urlObject.operation}: ошибка сети (${message}).`);
+    throw new Error(message);
+  }
+
+  const responseBody = await parseResponseBody(response);
+
+  if (!response.ok) {
+    const message = buildApiErrorMessage(responseBody, response.status);
+    addLog(`${urlObject.operation}: ошибка (${message}).`);
+    throw new Error(message);
+  }
+
+  addLog(`${urlObject.operation}: успешно.`);
+  return responseBody;
+}
+
+function constructUrl(path, params = {}) {
+  const url = new URL(path);
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      url.searchParams.set(key, String(value));
+    }
+  });
+
+  return url.toString();
+}
+
+function getDefaultHeaders() {
+  return {
+    'Content-Type': 'application/json; charset=UTF-8'
+  };
+}
+
+async function parseResponseBody(response) {
+  const text = await response.text();
+
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
+
+function buildApiErrorMessage(responseBody, status) {
+  if (responseBody && typeof responseBody === 'object') {
+    if (typeof responseBody.message === 'string' && responseBody.message) {
+      return responseBody.message;
+    }
+
+    if (typeof responseBody.error === 'string' && responseBody.error) {
+      return responseBody.error;
+    }
+  }
+
+  return `HTTP ${status}`;
+}
+
 menuButtons.forEach((button) => {
   button.addEventListener('click', () => {
     setActivePanel(button.dataset.target || '');
@@ -46,15 +128,15 @@ countryForm.addEventListener('submit', async (event) => {
   setPlaceholder(countryResult, 'Идёт запрос к REST Countries API...');
 
   try {
-    const response = await fetch(
-      `${ENDPOINTS.countries}${encodeURIComponent(country)}?fields=name,capital,region,population,flags,cca2`
+    const data = await sendRequest(
+      {
+        path: `${ENDPOINTS.countries}${encodeURIComponent(country)}`,
+        method: 'GET',
+        operation: 'REST Countries GET'
+      },
+      {},
+      { fields: 'name,capital,region,population,flags,cca2' }
     );
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
 
     if (!Array.isArray(data) || data.length === 0) {
       throw new Error('Страна не найдена.');
@@ -62,12 +144,10 @@ countryForm.addEventListener('submit', async (event) => {
 
     renderCountries(data.slice(0, 4));
     setStatus(countryStatus, 'success', `Найдено стран: ${Math.min(data.length, 4)}.`);
-    addLog(`REST Countries GET: успешно для "${country}".`);
   } catch (error) {
     const message = normalizeError(error);
     setStatus(countryStatus, 'error', `Ошибка: ${message}`);
     setPlaceholder(countryResult, 'Не удалось получить данные по стране.');
-    addLog(`REST Countries GET: ошибка (${message}).`);
   }
 });
 
@@ -76,13 +156,11 @@ dogButton.addEventListener('click', async () => {
   setPlaceholder(dogResult, 'Идёт запрос к Dog CEO API...');
 
   try {
-    const response = await fetch(ENDPOINTS.dogs);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await sendRequest({
+      path: ENDPOINTS.dogs,
+      method: 'GET',
+      operation: 'Dog API GET'
+    });
 
     if (!data.message) {
       throw new Error('Некорректный ответ API.');
@@ -95,12 +173,10 @@ dogButton.addEventListener('click', async () => {
     `;
 
     setStatus(dogStatus, 'success', 'Изображение успешно получено.');
-    addLog('Dog CEO GET: получено новое изображение.');
   } catch (error) {
     const message = normalizeError(error);
     setStatus(dogStatus, 'error', `Ошибка: ${message}`);
     setPlaceholder(dogResult, 'Не удалось загрузить изображение собаки.');
-    addLog(`Dog CEO GET: ошибка (${message}).`);
   }
 });
 
@@ -109,22 +185,22 @@ postsLoadButton.addEventListener('click', async () => {
   setPlaceholder(postResponse, 'Идёт запрос к JSONPlaceholder (GET)...');
 
   try {
-    const response = await fetch(`${ENDPOINTS.posts}?_limit=5`);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const posts = await response.json();
+    const posts = await sendRequest(
+      {
+        path: ENDPOINTS.posts,
+        method: 'GET',
+        operation: 'JSONPlaceholder GET'
+      },
+      {},
+      { _limit: 5 }
+    );
 
     renderPosts(posts);
     setStatus(postStatus, 'success', 'GET выполнен: 5 постов загружено.');
-    addLog('JSONPlaceholder GET: список постов загружен.');
   } catch (error) {
     const message = normalizeError(error);
     setStatus(postStatus, 'error', `Ошибка GET: ${message}`);
     setPlaceholder(postResponse, 'Не удалось получить список постов.');
-    addLog(`JSONPlaceholder GET: ошибка (${message}).`);
   }
 });
 
@@ -144,29 +220,22 @@ postCreateForm.addEventListener('submit', async (event) => {
   setStatus(postStatus, 'loading', 'POST-запрос: создаём пост...');
 
   try {
-    const response = await fetch(ENDPOINTS.posts, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8'
+    const createdPost = await sendRequest(
+      {
+        path: ENDPOINTS.posts,
+        method: 'POST',
+        operation: 'JSONPlaceholder POST'
       },
-      body: JSON.stringify({ title, body, userId: 1 })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const createdPost = await response.json();
+      { title, body, userId: 1 }
+    );
 
     renderRawResponse('POST', createdPost);
     setStatus(postStatus, 'success', 'POST выполнен: пост создан (тестовый ответ сервиса).');
-    addLog(`JSONPlaceholder POST: создан пост с ID ${createdPost.id}.`);
     postCreateForm.reset();
   } catch (error) {
     const message = normalizeError(error);
     setStatus(postStatus, 'error', `Ошибка POST: ${message}`);
     setPlaceholder(postResponse, 'Не удалось создать пост.');
-    addLog(`JSONPlaceholder POST: ошибка (${message}).`);
   }
 });
 
@@ -203,29 +272,22 @@ postPatchForm.addEventListener('submit', async (event) => {
   setStatus(postStatus, 'loading', `PATCH-запрос: обновляем пост ${id}...`);
 
   try {
-    const response = await fetch(`${ENDPOINTS.posts}/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8'
+    const patchedPost = await sendRequest(
+      {
+        path: `${ENDPOINTS.posts}/${id}`,
+        method: 'PATCH',
+        operation: 'JSONPlaceholder PATCH'
       },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const patchedPost = await response.json();
+      payload
+    );
 
     renderRawResponse('PATCH', patchedPost);
     setStatus(postStatus, 'success', `PATCH выполнен: пост ${id} обновлён (тестовый ответ сервиса).`);
-    addLog(`JSONPlaceholder PATCH: обновлён пост ${id}.`);
     postPatchForm.reset();
   } catch (error) {
     const message = normalizeError(error);
     setStatus(postStatus, 'error', `Ошибка PATCH: ${message}`);
     setPlaceholder(postResponse, 'Не удалось обновить пост.');
-    addLog(`JSONPlaceholder PATCH: ошибка (${message}).`);
   }
 });
 
@@ -244,23 +306,19 @@ postDeleteForm.addEventListener('submit', async (event) => {
   setStatus(postStatus, 'loading', `DELETE-запрос: удаляем пост ${id}...`);
 
   try {
-    const response = await fetch(`${ENDPOINTS.posts}/${id}`, {
-      method: 'DELETE'
+    await sendRequest({
+      path: `${ENDPOINTS.posts}/${id}`,
+      method: 'DELETE',
+      operation: 'JSONPlaceholder DELETE'
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
 
     renderRawResponse('DELETE', { id, deleted: true, note: 'JSONPlaceholder возвращает тестовый результат.' });
     setStatus(postStatus, 'success', `DELETE выполнен: пост ${id} удалён (тестовый ответ сервиса).`);
-    addLog(`JSONPlaceholder DELETE: удалён пост ${id}.`);
     postDeleteForm.reset();
   } catch (error) {
     const message = normalizeError(error);
     setStatus(postStatus, 'error', `Ошибка DELETE: ${message}`);
     setPlaceholder(postResponse, 'Не удалось удалить пост.');
-    addLog(`JSONPlaceholder DELETE: ошибка (${message}).`);
   }
 });
 
